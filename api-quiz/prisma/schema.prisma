@@ -6,3 +6,28 @@ datasource db {
   provider = "sqlite"
   url      = env("DATABASE_URL")
 }
+
+generator erd {
+  provider = "prisma-erd-generator"
+}
+
+model Question {
+  id                Int               @id @default(autoincrement())
+  category          String
+  type              String
+  difficulty        String
+  question          String
+  correct_answer    String
+  incorrect_answers IncorrectAnswer[]
+
+  @@map("question")
+}
+
+model IncorrectAnswer {
+  id         Int      @id @default(autoincrement())
+  answer     String
+  question   Question @relation(fields: [questionId], references: [id])
+  questionId Int
+
+  @@map("incorrect_answer")
+}
