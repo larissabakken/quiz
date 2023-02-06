@@ -11,6 +11,7 @@
     "start": "nest start",
     "prisma": "npx prisma",
     "studio": "npx prisma studio",
+    "seed": "npx prisma db seed",
     "dev": "nest start --watch",
     "start:debug": "nest start --debug --watch",
     "start:prod": "node dist/main",
