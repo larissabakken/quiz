@@ -1,25 +1,29 @@
 import { PrismaClient } from '@prisma/client';
 
+const dbQuestions = require('./questions.json');
+
 const prisma = new PrismaClient();
 
 async function main() {
-  await prisma.question.create({
-    data: {
-      category: 'Games',
-      type: 'multiple',
-      difficulty: 'easy',
-      question:
-        'What is the name of the main character in the video game &quot;The Legend of Zelda&quot;?',
-      correct_answer: 'Link',
-      incorrect_answers: {
-        create: [
-            { answer: 'Zelda' },
-            { answer: 'Ganondorf' },
-            { answer: 'Epona' },
-        ],
+  for (const question of dbQuestions) {
+    const newQuestion = await prisma.question.create({
+      data: {
+        category: question.category,
+        type: question.type,
+        difficulty: question.difficulty,
+        question: question.question,
+        correct_answer: question.correct_answer,
+        incorrect_answers: {
+          create: [
+            { answer: question.incorrect_answers[0] },
+            { answer: question.incorrect_answers[1] },
+            { answer: question.incorrect_answers[2] },
+          ],
+        },
       },
-    },
-  });
+    });
+    console.log(`Created question with id: ${newQuestion.id}`);
+  }
 }
 
 main()

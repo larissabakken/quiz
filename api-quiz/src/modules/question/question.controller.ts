@@ -18,4 +18,10 @@ export class QuestionController {
   async findAll() {
     return this.questionService.findAll();
   }
+
+  // @Get(':id')
+  // async getQuestion(@Param('id') id: string): Promise<QuestionDTO> {
+  //   return this.questionService.getQuestion(id);
+  // }
+  
 }

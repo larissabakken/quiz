@@ -1,0 +1,40 @@
+[
+    {
+        "category": "Games",
+        "type": "multiple",
+        "difficulty": "easy",
+        "question":"What was Mario first known as in Donkey Kong?",
+        "correct_answer": "Jumpman",	
+        "incorrect_answers": [
+            "Mr. Video",
+            "Mr. Game & Watch",
+            "Mr. Nintendo"
+        ]
+    },
+    {
+        "category": "Games",
+        "type": "multiple",
+        "difficulty": "easy",
+        "question":"What is the name of the main character in the video game series Metal Gear Solid?",
+        "correct_answer": "Solid Snake",
+        "incorrect_answers": [
+            "Liquid Snake",
+            "Gray Fox",
+            "Big Boss"
+        ]
+    }, 
+    {
+        "category": "Games",
+        "type": "multiple",
+        "difficulty": "easy",
+        "question":"What is the name of the main character in the video game series The Legend of Zelda?",
+        "correct_answer": "Link",
+        "incorrect_answers": [
+            "Zelda",
+            "Ganondorf",
+            "Sheik"
+        ]
+    }
+    
+    
+]
