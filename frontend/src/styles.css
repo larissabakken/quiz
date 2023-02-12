@@ -1,0 +1,49 @@
+.option-default {
+    @apply cursor-pointer;
+  }
+  
+  .option-default div:nth-child(1) {
+    @apply hidden;
+  }
+  
+  .option-default div:nth-child(2) div:nth-child(1) {
+    @apply inline bg-gray-400 text-gray-800;
+  }
+  
+  .option-default div:nth-child(2) {
+    @apply bg-white text-gray-800;
+  }
+  
+  /* wrong custom classes */
+  .option-wrong {
+    @apply cursor-pointer;
+  }
+  
+  .option-wrong div:nth-child(1) {
+    @apply hidden;
+  }
+  
+  .option-wrong div:nth-child(2) div:nth-child(1) {
+    @apply inline bg-gray-800 text-white;
+  }
+  
+  .option-wrong div:nth-child(2) {
+    @apply bg-red-600 text-white;
+  }
+  
+  /* correct custom classes */
+  .option-correct {
+    @apply cursor-pointer;
+  }
+  
+  .option-correct div:nth-child(1) {
+    @apply inline;
+  }
+  
+  .option-correct div:nth-child(2) div:nth-child(1) {
+    @apply bg-gray-800 text-white;
+  }
+  
+  .option-correct div:nth-child(2) {
+    @apply bg-green-600 text-white;
+  }
