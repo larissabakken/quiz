@@ -1,28 +1,38 @@
 import { PrismaClient } from '@prisma/client';
 
-const dbQuestions = require('./questions.json');
+const dbQuestions = require('./quiz.json');
 
 const prisma = new PrismaClient();
 
 async function main() {
-  for (const question of dbQuestions) {
-    const newQuestion = await prisma.question.create({
-      data: {
+  for (const quiz of dbQuestions) {
+    const quizQuestions = quiz.questions.map((question) => {
+      return {
         category: question.category,
         type: question.type,
         difficulty: question.difficulty,
         question: question.question,
         correct_answer: question.correct_answer,
         incorrect_answers: {
-          create: [
-            { answer: question.incorrect_answers[0] },
-            { answer: question.incorrect_answers[1] },
-            { answer: question.incorrect_answers[2] },
-          ],
+          create: question.incorrect_answers.map((answer) => {
+            return {
+              answer: answer,
+            };
+          }),
+        },
+      };
+    });
+
+    console.log(quizQuestions, 'quizQuestions');
+    const newQuiz = await prisma.quiz.create({
+      data: {
+        name: quiz.name,
+        questions: {
+          create: [...quizQuestions],
         },
       },
     });
-    console.log(`Created question with id: ${newQuestion.id}`);
+    console.log(newQuiz);
   }
 }
 

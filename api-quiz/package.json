@@ -12,6 +12,7 @@
     "prisma": "npx prisma",
     "studio": "npx prisma studio",
     "seed": "npx prisma db seed",
+    "migration": "npx prisma migrate dev",
     "dev": "nest start --watch",
     "start:debug": "nest start --debug --watch",
     "start:prod": "node dist/main",

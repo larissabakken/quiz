@@ -1,11 +1,19 @@
 -- CreateTable
+CREATE TABLE "Quiz" (
+    "id" INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+    "name" TEXT NOT NULL
+);
+
+-- CreateTable
 CREATE TABLE "question" (
     "id" INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
     "category" TEXT NOT NULL,
     "type" TEXT NOT NULL,
     "difficulty" TEXT NOT NULL,
     "question" TEXT NOT NULL,
-    "correct_answer" TEXT NOT NULL
+    "correct_answer" TEXT NOT NULL,
+    "quizId" INTEGER NOT NULL,
+    CONSTRAINT "question_quizId_fkey" FOREIGN KEY ("quizId") REFERENCES "Quiz" ("id") ON DELETE RESTRICT ON UPDATE CASCADE
 );
 
 -- CreateTable
