@@ -2,42 +2,77 @@
 
 [Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
 
-## Step by step 
+## Step by step
 
--yarn 
--yarn prisma migrate dev 
--yarn start 
-## Installation
+1. Install Nest CLI globally
 
-```bash
-$ yarn install
-```
+   ```bash
+   $ npm i -g @nestjs/cli
+   ```
 
-## Running the app
+2. Install Prisma CLI globally
 
-```bash
-# development
-$ yarn run start
+   ```bash
+   $ npm i -g prisma
+   ```
 
-# watch mode
-$ yarn run start:dev
+3. Install dependencies
 
-# production mode
-$ yarn run start:prod
-```
+   ```bash
+   $ npm install
+   ```
 
-## Test
+   or
 
-```bash
-# unit tests
-$ yarn run test
+   ```bash
+   $ yarn
+   ```
 
-# e2e tests
-$ yarn run test:e2e
+4. Create a new database in SQLITE
 
-# test coverage
-$ yarn run test:cov
-```
+   ```bash
+   $ yarn migration
+   ```
+
+   or
+
+   ```bash
+   $ npm run migration
+   ```
+
+5. Run the seeders
+
+   ```bash
+   $ yarn seed
+   ```
+
+   or
+
+   ```bash
+   $ npm run seed
+   ```
+
+6. Run the app
+
+   ```bash
+   # development
+   $ yarn dev
+
+   # production 
+   $ yarn start
+   ```
+   or 
+   
+   ```bash
+    # development
+    $ npm run dev
+
+    # production
+    $ npm run start
+    ```
+## Routes
+- GET api/quiz
+- GET api/quiz/:id
 
 ## Support
 
