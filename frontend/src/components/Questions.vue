@@ -1,19 +1,14 @@
 <template>
   <div v-if="loading">
-    <div
-    class="absolute w-full h-full bg-gray-800 opacity-30"
-    id="loadingPage"
-    
-  >
-    <div class="flex justify-center">
-      <div
-        class="inline-block w-24 h-24 border-t-8 border-[var(--color-primary)] rounded-full animate-spin mt-[100px]"
-      ></div>
+    <div class="absolute w-full h-full bg-gray-800 opacity-30" id="loadingPage">
+      <div class="flex justify-center">
+        <div
+          class="inline-block w-24 h-24 border-t-8 border-[var(--color-primary)] rounded-full animate-spin mt-[100px]"
+        ></div>
+      </div>
     </div>
   </div>
 
-  </div>
- 
   <div class="container" id="divQuiz">
     <!-- card questions -->
     <div class="flex items-center justify-center">
@@ -208,23 +203,21 @@ export default {
 
     setLoading() {
       this.loading = true;
-      if (this.index < this.questions.length - 1) {
-        setTimeout(() => {
-          this.loading = false;
-        }, 1000);
-      }
+
+      setTimeout(() => {
+        this.loading = false;
+      }, 3000);
     },
     handleSubmit(e) {
       let index = e.target.getAttribute("index");
       let value = e.target.getAttribute("value");
       console.log(e.target, "e.target", index, "index", value, "value");
       let userAnswer = value;
-      this.setLoading();
-
-      //set answer
-      this.questions[index].userAnswer = userAnswer;
-      this.checkCorrectAnswer(e, index);
-      
+      if (!this.loading) {
+        this.setLoading();
+        this.questions[index].userAnswer = userAnswer;
+        this.checkCorrectAnswer(e, index);
+      }
     },
 
     handleFinish() {
