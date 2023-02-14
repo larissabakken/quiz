@@ -3,3 +3,31 @@
 @tailwind utilities;
 
 @import "styles.css";
+
+:root {
+  --color-primary: #b31c1c;
+  --color-primary-dark: #a53333;
+  --color-secondary: #2c94a7;
+  --color-hover: rgb(78, 109, 104);
+  --coolor-bg-card: #f5ecdc;
+}
+
+body {
+  @apply bg-gray-200 text-gray-900;
+}
+
+button {
+  @apply bg-[var(--color-primary)] text-white font-bold py-2 px-4 rounded-2xl;
+}
+
+button:hover {
+  @apply bg-[var(--color-hover)];
+}
+
+h6 {
+  @apply text-[var(--color-primary-dark)] font-bold;
+}
+
+h1 {
+    @apply text-[var(--color-primary-dark)] font-bold text-5xl;
+}

@@ -1,224 +1,282 @@
 <template>
-  <main class="flex h-screen items-center justify-center bg-gray-100">
-    <QuizComplete v-if="endOfQuiz"/>
-    <!-- quiz container -->
+  <div v-if="loading">
     <div
-      class="overflow-hidden bg-white flex-none container relative shadow-lg rounded-lg px-12 py-6"
-    >
-      <img
-        src="@/assets/logo.png"
-        alt=""
-        class="absolute -top-10 left-0 object-none"
-      />
+    class="absolute w-full h-full bg-gray-800 opacity-30"
+    id="loadingPage"
+    
+  >
+    <div class="flex justify-center">
+      <div
+        class="inline-block w-24 h-24 border-t-8 border-[var(--color-primary)] rounded-full animate-spin mt-[100px]"
+      ></div>
+    </div>
+  </div>
 
-      <!-- contents -->
-      <div class="relative z-20">
-        <!-- score container -->
-        <div class="text-right text-gray-800">
-          <p class="text-sm leading-3">Score</p>
-          <p class="font-bold">{{ score }}</p>
-        </div>
-
-        <!-- timer container -->
-        <div class="bg-white shadow-lg p-1 rounded-full w-full h-5 mt-4">
-          <div
-            class="bg-blue-700 rounded-full w-11/12 h-full"
-            :style="`width:${timer}%`"
-          ></div>
-        </div>
-
-        <!-- question container -->
-        <div
-          class="rounded-lg bg-gray-100 p-2 neumorph-1 text-center font-bold text-gray-800 mt-8"
-        >
-          <div class="bg-white p-5">
-            {{ currentQuestion.question }}
-          </div>
-        </div>
-
-        <!-- options container -->
-
-        <div class="mt-8">
-          <!-- option container -->
-
-          <div v-for="(choice, item) in currentQuestion.choices" :key="item">
+  </div>
+ 
+  <div class="container" id="divQuiz">
+    <!-- card questions -->
+    <div class="flex items-center justify-center">
+      <div
+        class="block p-6 rounded-lg shadow-lg bg-[var(--coolor-bg-card)] min-w-full"
+      >
+        <div class="my-6 mb-3">
+          <h6>Quiz</h6>
+          <p class="text-gray-600 text-sm">
+            Question {{ index + 1 }} of {{ questions.length }}
+          </p>
+          <div class="w-full bg-gray-200 h-2 rounded-lg my-2">
             <div
-              class="neumorph-1 option-default bg-gray-100 p-2 rounded-lg mb-3 relative"
-              :ref="optionChosen"
-              @click="onOptionClicked(choice, item)"
-            >
-              <div
-                class="bg-blue-700 p-1 transform rotate-45 rounded-md h-10 w-10 text-white font-bold absolute right-0 top-0 shadow-md"
-              >
-                <p class="transform -rotate-45">+10</p>
-              </div>
+              class="bg-[var(--color-primary)] h-2 rounded-lg"
+              :style="{
+                width: `${((index + 1) / questions.length) * 100}%`,
+              }"
+            ></div>
+          </div>
+          <h6 class="my-2">Question {{ index + 1 }}</h6>
+          <span
+            class="visually-hidden font-semibold"
+            v-html="loading ? 'Loading...' : currentQuestion.question"
+          ></span>
+        </div>
 
-              <div class="rounded-lg font-bold flex p-2">
-                <!-- option ID -->
-                <div class="p-3 rounded-lg">{{ item }}</div>
-
-                <!-- option name -->
-                <div class="flex items-center pl-6">{{ choice }}</div>
-              </div>
+        <form v-if="currentQuestion">
+          <div class="">
+            <div v-for="answer in currentQuestion.answers">
+              <input
+                type="radio"
+                @change.prevent="handleSubmit"
+                v-model="checkedAnswers"
+                :index="currentQuestion.key"
+                :key="answer"
+                :value="answer"
+                :id="currentQuestion.key"
+              />
+              <label
+                class="form-check-label inline-block text-gray-800"
+                v-html="answer"
+                :for="currentQuestion.key"
+              ></label>
             </div>
           </div>
-        </div>
 
-        <!-- progress indicator container -->
-        <div class="mt-8 text-center">
-          <div class="h-1 w-12 bg-gray-800 rounded-full mx-auto"></div>
-          <p class="font-bold text-gray-800">
-            {{ questionCounter }}/{{ questions.length }}
-          </p>
-        </div>
+          <div class="w-full py-3">
+            <button
+              v-if="index > 0"
+              @click.prevent="index--"
+              class="float-left"
+            >
+              Previous
+            </button>
+            <button
+              v-if="index < questions.length - 1"
+              class="float-right"
+              @click.prevent="index++"
+            >
+              Next
+            </button>
+            <button
+              @click.prevent="handleFinish"
+              v-if="index == questions.length - 1"
+              class="bg-[var(--color-secondary)] :hover:bg-[var(--color-secondary-hover)] float-right"
+            >
+              Finish
+            </button>
+          </div>
+        </form>
       </div>
     </div>
-  </main>
+  </div>
+  <!-- score -->
+  <div class="flex justify-center items-center">
+    <div id="divScore" hidden>
+      <h1>You score: {{ correctAnswers }}</h1>
+    </div>
+  </div>
 </template>
 
 <script>
-import { onMounted, ref } from "vue";
-import QuizComplete from "@/components/QuizComplete.vue";
-
 export default {
-  components: {
-    QuizComplete,
-  },
-  setup() {
-    // data
-    let canClick = true;
-    let timer = ref(100);
-    let endOfQuiz = ref(false);
-    let questionCounter = ref(0);
-    let score = ref(0);
-    const currentQuestion = ref({
-      question: "",
-      answer: 1,
-      choices: [],
-    });
-    const questions = [
-      {
-        question:
-          "Which programming language shares its name with an island in Indonesia?",
-        answer: 1,
-        choices: ["Java", "Python", "C", "Jakarta"],
-      },
-      {
-        question: "On Twitter, what is the character limit for a Tweet?",
-        answer: 3,
-        choices: ["120", "160", "140", "100"],
-      },
-      {
-        question: "What does the 'MP' stand for in MP3?",
-        answer: 4,
-        choices: [
-          "Music Player",
-          "Multi Pass",
-          "Micro Point",
-          "Moving Picture",
-        ],
-      },
-    ];
-
-    const loadQuestion = () => {
-      canClick = true;
-      // Check if there are more questions to load
-      if (questions.length > questionCounter.value) {
-        // load question
-        timer.value = 100;
-        currentQuestion.value = questions[questionCounter.value];
-        console.log("Current questions", currentQuestion.value);
-        questionCounter.value++;
-      } else {
-        // no more questions
-        endOfQuiz.value = true;
-        console.log("Out of questions");
-      }
-    };
-
-    // methods/functions
-    let itemsRef = [];
-    const optionChosen = (element) => {
-      if (element) {
-        itemsRef.push(element);
-      }
-    };
-
-    const clearSelected = (divSelected) => {
-      setTimeout(() => {
-        divSelected.classList.remove("option-correct");
-        divSelected.classList.remove("option-wrong");
-        divSelected.classList.add("option-default");
-        loadQuestion();
-      }, 1000);
-    };
-
-    const onOptionClicked = (choice, item) => {
-      if (canClick) {
-        const divContainer = itemsRef[item];
-        const optionID = item + 1;
-        if (currentQuestion.value.answer == optionID) {
-          console.log("you are correct");
-          score.value += 10;
-          divContainer.classList.add("option-correct");
-          divContainer.classList.remove("option-default");
-        } else {
-          console.log("you are wrong");
-          divContainer.classList.add("option-wrong");
-          divContainer.classList.remove("option-default");
-        }
-        timer.value = 100;
-        canClick = false;
-        // TODO go to next question
-        clearSelected(divContainer);
-        console.log(choice, item);
-      } else {
-        // Cant select option
-        console.log("cant select question");
-      }
-    };
-
-    const countDownTimer = () => {
-      let interval = setInterval(() => {
-        if (timer.value > 0) {
-          timer.value--;
-        } else {
-          clearInterval(interval);
-          timer.value = 100;
-          loadQuestion();
-        }
-      }, 200);
-    };
-
-    // lifecycle hooks
-    onMounted(() => {
-      loadQuestion();
-      countDownTimer();
-    });
-
-    // return
+  data() {
     return {
-      endOfQuiz,
-      currentQuestion,
-      timer,
-      questions,
-      score,
-      questionCounter,
-      loadQuestion,
-      onOptionClicked,
-      optionChosen,
+      questions: [],
+      loading: true,
+      index: 0,
     };
+  },
+  computed: {
+    currentQuestion() {
+      if (this.questions !== []) {
+        return this.questions[this.index];
+      }
+      return null;
+    },
+    correctAnswers() {
+      if (this.questions && this.questions.length > 0) {
+        let streakCounter = 0;
+        this.questions.forEach(function (question) {
+          if (!question.rightAnswer) {
+            return;
+          } else if (question.rightAnswer === true) {
+            streakCounter++;
+          }
+        });
+        return streakCounter;
+      } else {
+        return "--";
+      }
+    },
+    quizCompleted() {
+      if (this.questions.length === 0) {
+        return false;
+      }
+      /* Check if all questions have been answered */
+      let questionsAnswered = 0;
+      this.questions.forEach(function (question) {
+        question.rightAnswer !== null ? questionsAnswered++ : null;
+      });
+      return questionsAnswered === this.questions.length;
+    },
+    score() {
+      if (this.questions !== []) {
+        return {
+          allQuestions: this.questions.length,
+          answeredQuestions: this.questions.reduce((count, currentQuestion) => {
+            if (currentQuestion.userAnswer) {
+              // userAnswer is set when user has answered a question, no matter if right or wrong
+              count++;
+            }
+            return count;
+          }, 0),
+          correctlyAnsweredQuestions: this.questions.reduce(
+            (count, currentQuestion) => {
+              if (currentQuestion.rightAnswer) {
+                // rightAnswer is true, if user answered correctly
+                count++;
+              }
+              return count;
+            },
+            0
+          ),
+        };
+      } else {
+        return {
+          allQuestions: 0,
+          answeredQuestions: 0,
+          correctlyAnsweredQuestions: 0,
+        };
+      }
+    },
+  },
+  watch: {
+    quizCompleted(completed) {
+      completed &&
+        setTimeout(() => {
+          this.$emit("quiz-completed", this.score);
+        }, 3000);
+    },
+  },
+  methods: {
+    async fetchQuestions() {
+      this.loading = true;
+      //fetching questions from api
+      let response = await fetch("http://localhost:3003/api/quiz/14");
+      let index = 0; //To identify single answer
+      let data = await response.json();
+      let questions = data.questions.map((question) => {
+        question.answers = [
+          question.correct_answer,
+          ...question.incorrect_answers,
+        ];
+        //shuffle above array
+        for (let i = question.answers.length - 1; i > 0; i--) {
+          const j = Math.floor(Math.random() * (i + 1));
+          [question.answers[i], question.answers[j]] = [
+            question.answers[j],
+            question.answers[i],
+          ];
+        }
+        //add right answers and key
+        question.rightAnswer = null;
+        question.key = index;
+        index++;
+        return question;
+      });
+      this.questions = questions;
+      this.loading = false;
+    },
+
+    setLoading() {
+      this.loading = true;
+      if (this.index < this.questions.length - 1) {
+        setTimeout(() => {
+          this.loading = false;
+        }, 1000);
+      }
+    },
+    handleSubmit(e) {
+      let index = e.target.getAttribute("index");
+      let value = e.target.getAttribute("value");
+      console.log(e.target, "e.target", index, "index", value, "value");
+      let userAnswer = value;
+      this.setLoading();
+
+      //set answer
+      this.questions[index].userAnswer = userAnswer;
+      this.checkCorrectAnswer(e, index);
+      
+    },
+
+    handleFinish() {
+      document.getElementById("divScore").hasAttribute("hidden")
+        ? document.getElementById("divScore").removeAttribute("hidden")
+        : null;
+      document.getElementById("divQuiz").style.display = "none";
+    },
+
+    checkCorrectAnswer(e, index) {
+      console.log("checkCorrectAnswer", e, index);
+      let question = this.questions[index];
+      if (question.userAnswer) {
+        if (this.index < this.questions.length - 1) {
+          setTimeout(
+            function () {
+              this.index += 1;
+            }.bind(this),
+            3000
+          );
+        }
+        if (question.userAnswer === question.correct_answer) {
+          /* Set class on Button if user answered right, to celebrate right answer with animation joyfulButton */
+          e.target.classList.add("rightAnswer");
+          /* Set rightAnswer on question to true, computed property can track a streak out of 20 questions */
+          this.questions[index].rightAnswer = true;
+        } else {
+          /* Mark users answer as wrong answer */
+          e.target.classList.add("wrongAnswer");
+          this.questions[index].rightAnswer = false;
+          /* Show right Answer */
+          let correctAnswer = this.questions[index].correct_answer;
+          let allButtons = document.querySelectorAll(`[index="${index}"]`);
+          allButtons.forEach(function (button) {
+            if (button.innerHTML === correctAnswer) {
+              button.classList.add("showRightAnswer");
+            }
+          });
+        }
+      }
+    },
+  },
+  mounted() {
+    this.fetchQuestions();
   },
 };
 </script>
 
 <style scoped>
-.neumorph-1 {
-  box-shadow: 6px 6px 18px rgba(0, 0, 0, 0.09), -6px -6px 18px #ffffff;
-}
-
 .container {
-  max-width: 400px;
-  border-radius: 25px;
+  margin: 1rem auto;
+  padding: 1rem;
+  max-width: 750px;
 }
 </style>
